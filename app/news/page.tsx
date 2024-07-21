@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import {
   Card,
@@ -8,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const newsData = [
   {
@@ -78,13 +80,25 @@ const newsData = [
 
 const NewsPage = () => {
   return (
-    <div className="w-8/12 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-32">
+    <div className="w-8/12 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16 my-32">
       {newsData.map((news) => (
-        <Card>
+        <Card key={news.id}>
           <CardHeader>
-            <Link key={news.id} href={`/news/${news.id}`}>
-              <CardTitle>{news.title}</CardTitle>
-            </Link>
+            <AspectRatio ratio={4 / 3} className="bg-muted flex items-end">
+              <Image
+                src="https://images.pexels.com/photos/17846072/pexels-photo-17846072/free-photo-of-close-up-of-a-newspaper-stand.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                alt="Photo by Drew Beamer"
+                fill
+                className="rounded-md object-cover"
+              />
+              <Link
+                key={news.id}
+                href={`/news/${news.id}`}
+                className=" relative text-white m-2 drop-shadow-md"
+              >
+                <CardTitle className=" z-10">{news.title}</CardTitle>
+              </Link>
+            </AspectRatio>
             <CardDescription>{news.category}</CardDescription>
           </CardHeader>
           <CardContent>

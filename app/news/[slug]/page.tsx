@@ -1,6 +1,7 @@
 import { DUMMY_NEWS } from "@/dummy-news";
 import { formatDate } from "@/utils/formats";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 
 type ParamsType = { params: { slug: string } };
 
@@ -8,7 +9,7 @@ const NewsDetailPage = ({ params }: ParamsType) => {
   const news = DUMMY_NEWS.find((newsItem) => newsItem.slug === params.slug);
 
   if (!news) {
-    return <p>News not found.</p>;
+    notFound();
   }
 
   return (

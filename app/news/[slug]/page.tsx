@@ -1,6 +1,7 @@
 import { DUMMY_NEWS } from "@/dummy-news";
 import { formatDate } from "@/utils/formats";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type ParamsType = { params: { slug: string } };
@@ -22,17 +23,19 @@ const NewsDetailPage = ({ params }: ParamsType) => {
           </time>
         </header>
         <div className="">
-          <Image
-            src={`/images/news/${news.image}`}
-            alt={news.title}
-            style={{
-              width: "30%",
-              height: "auto",
-            }}
-            width={500}
-            height={300}
-            className="rounded-md object-cover float-left mr-6 mb-16"
-          />
+          <Link href={`/news/${news.slug}/image`}>
+            <Image
+              src={`/images/news/${news.image}`}
+              alt={news.title}
+              style={{
+                width: "30%",
+                height: "auto",
+              }}
+              width={500}
+              height={300}
+              className="rounded-md object-cover float-left mr-6 mb-16"
+            />
+          </Link>
           <p>{news.content}</p>
         </div>
       </div>

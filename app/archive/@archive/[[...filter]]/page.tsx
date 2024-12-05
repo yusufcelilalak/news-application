@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/pagination";
 import { getAvailableNewsYears } from "@/lib/news";
 import { getMonthName, getMonthNumber } from "@/utils/formats";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type ParamsType = { params: { filter: string[] } };
 
@@ -42,6 +44,16 @@ export default function FiltredNewsPage({ params }: ParamsType) {
     newsContent = <NewsList news={news} />;
   }
 
+  if (
+    (selectedYear && !getAvailableNewsYears().includes(+selectedYear)) ||
+    (selectedMonth &&
+      !getAvailableNewsMonths(selectedYear).includes(
+        +getMonthNumber(selectedMonth)
+      ))
+  ) {
+    throw new Error("Invalid filter.");
+  }
+
   return (
     <>
       <Pagination className="justify-start mb-4">
@@ -53,13 +65,14 @@ export default function FiltredNewsPage({ params }: ParamsType) {
 
             return (
               <PaginationItem key={link}>
-                <PaginationLink
+                <Button
                   className="w-fit px-1"
-                  href={href}
-                  isActive={+selectedYear === link}
+                  variant={+selectedYear === link ? "outline" : "ghost"}
                 >
-                  {link}
-                </PaginationLink>
+                  <Link className="w-fit px-1" href={href}>
+                    {link}
+                  </Link>
+                </Button>
               </PaginationItem>
             );
           })}

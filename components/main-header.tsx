@@ -1,16 +1,11 @@
-import Link from "next/link";
 import { DarkModeToggle } from "./dark-mode-btn";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import NavLink from "./nav-link";
 
 const MainHeader = () => {
   return (
@@ -18,27 +13,26 @@ const MainHeader = () => {
       <NavigationMenu className="w-10/12 flex justify-between max-w-none mx-auto">
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Link href="/" legacyBehavior passHref>
-              <NavigationMenuLink className="text-xl font-bold">
-                DailyNews
-              </NavigationMenuLink>
-            </Link>
+            <NavLink href="/" className="text-xl font-bold">
+              DailyNews
+            </NavLink>
           </NavigationMenuItem>
         </NavigationMenuList>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Link href="/" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Home
-              </NavigationMenuLink>
-            </Link>
+            <NavLink href="/" className={navigationMenuTriggerStyle()}>
+              Home
+            </NavLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="/news" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                News
-              </NavigationMenuLink>
-            </Link>
+            <NavLink href="/news" className={navigationMenuTriggerStyle()}>
+              News
+            </NavLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavLink href="/archive" className={navigationMenuTriggerStyle()}>
+              Archive
+            </NavLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <DarkModeToggle />

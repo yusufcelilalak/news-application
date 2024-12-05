@@ -22,14 +22,15 @@ const NewsList = React.memo(({ news }: ParamsType) => {
           <Link href={`/news/${newsItem.slug}`} className=" ">
             <Card key={newsItem.id}>
               <CardHeader>
-                <AspectRatio ratio={4 / 3} className="bg-muted relative">
-                  <img
+                <AspectRatio ratio={4 / 3} className="bg-muted flex items-end">
+                  <Image
                     src={`/images/news/${newsItem.image}`}
                     alt={newsItem.title}
-                    className="rounded-md object-cover w-full h-full"
+                    fill
+                    className="rounded-md object-cover"
+                    loading="lazy"
                   />
-
-                  <CardTitle className="absolute bottom-0 left-0 right-0 text-white m-2 drop-shadow-md z-10">
+                  <CardTitle className="text-white m-2 drop-shadow-md z-10">
                     {newsItem.title}
                   </CardTitle>
                 </AspectRatio>

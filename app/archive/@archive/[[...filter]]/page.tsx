@@ -8,7 +8,6 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
 } from "@/components/ui/pagination";
 import { getAvailableNewsYears } from "@/lib/news";
 import { getMonthName, getMonthNumber } from "@/utils/formats";
@@ -17,24 +16,30 @@ import { Button } from "@/components/ui/button";
 
 type ParamsType = { params: { filter: string[] } };
 
-export default function FiltredNewsPage({ params }: ParamsType) {
+export default async function FilteredNewsPage({ params }: ParamsType) {
   const filter = params.filter;
 
   const selectedYear = filter?.[0];
   const selectedMonth = filter?.[1];
 
   let news;
-  let links: number[] | string[] = getAvailableNewsYears();
+  let links: number[] | string[] = await getAvailableNewsYears();
+
+  const padZero = (num: string) => num.toString().padStart(2, "0");
 
   if (selectedYear && !selectedMonth) {
-    news = getNewsForYear(selectedYear);
+    news = await getNewsForYear(selectedYear);
+
     links = getAvailableNewsMonths(selectedYear).map((month) =>
-      getMonthName(month)
+      getMonthName(+month)
     );
   }
 
   if (selectedYear && selectedMonth) {
-    news = getNewsForYearAndMonth(selectedYear, getMonthNumber(selectedMonth));
+    news = await getNewsForYearAndMonth(
+      selectedYear,
+      padZero(getMonthNumber(selectedMonth))
+    );
     links = [];
   }
 
@@ -44,11 +49,13 @@ export default function FiltredNewsPage({ params }: ParamsType) {
     newsContent = <NewsList news={news} />;
   }
 
+  const availableYears = await getAvailableNewsYears();
+
   if (
-    (selectedYear && !getAvailableNewsYears().includes(+selectedYear)) ||
+    (selectedYear && !availableYears.includes(String(selectedYear))) ||
     (selectedMonth &&
-      !getAvailableNewsMonths(selectedYear).includes(
-        +getMonthNumber(selectedMonth)
+      !getAvailableNewsMonths(String(selectedYear)).includes(
+        padZero(getMonthNumber(selectedMonth))
       ))
   ) {
     throw new Error("Invalid filter.");

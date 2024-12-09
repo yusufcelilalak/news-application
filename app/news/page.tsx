@@ -1,10 +1,12 @@
 import NewsList from "@/components/news-list";
-import { DUMMY_NEWS } from "@/dummy-news";
+import { getAllNews } from "@/lib/news";
 
-const NewsPage = () => {
+const NewsPage = async () => {
+  const news = await getAllNews();
+
   return (
     <div className="w-8/12 mx-auto my-32">
-      <NewsList news={DUMMY_NEWS} />
+      <NewsList news={news} />
     </div>
   );
 };

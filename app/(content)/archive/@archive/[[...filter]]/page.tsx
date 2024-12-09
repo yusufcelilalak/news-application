@@ -13,34 +13,69 @@ import { getAvailableNewsYears } from "@/lib/news";
 import { getMonthName, getMonthNumber } from "@/utils/formats";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
+import LoadingSpinner from "@/components/loading-spinner";
 
 type ParamsType = { params: { filter: string[] } };
+type FilteredNewsType = { year: string; month: string };
 
-export default async function FilteredNewsPage({ params }: ParamsType) {
-  const filter = params.filter;
+const padZero = (num: string) => num.toString().padStart(2, "0");
 
-  const selectedYear = filter?.[0];
-  const selectedMonth = filter?.[1];
+async function FilterHeader({ year, month }: FilteredNewsType) {
+  const availableYears = await getAvailableNewsYears();
+  let links: number[] | string[] = availableYears;
 
-  let news;
-  let links: number[] | string[] = await getAvailableNewsYears();
-
-  const padZero = (num: string) => num.toString().padStart(2, "0");
-
-  if (selectedYear && !selectedMonth) {
-    news = await getNewsForYear(selectedYear);
-
-    links = getAvailableNewsMonths(selectedYear).map((month) =>
-      getMonthName(+month)
-    );
+  if (
+    (year && !availableYears.includes(String(year))) ||
+    (month &&
+      !getAvailableNewsMonths(String(year)).includes(
+        padZero(getMonthNumber(month))
+      ))
+  ) {
+    throw new Error("Invalid filter.");
   }
 
-  if (selectedYear && selectedMonth) {
-    news = await getNewsForYearAndMonth(
-      selectedYear,
-      padZero(getMonthNumber(selectedMonth))
-    );
+  if (year && !month) {
+    links = getAvailableNewsMonths(year).map((month) => getMonthName(+month));
+  }
+
+  if (year && month) {
     links = [];
+  }
+
+  return (
+    <Pagination className="justify-start mb-4">
+      <PaginationContent>
+        {links.map((link) => {
+          const href = year
+            ? `/archive/${year}/${String(link).toLowerCase()}`
+            : `/archive/${link}`;
+
+          return (
+            <PaginationItem key={link}>
+              <Button
+                className="w-fit px-1"
+                variant={+year === link ? "outline" : "ghost"}
+              >
+                <Link className="w-fit px-1" href={href}>
+                  {link}
+                </Link>
+              </Button>
+            </PaginationItem>
+          );
+        })}
+      </PaginationContent>
+    </Pagination>
+  );
+}
+
+async function FilteredNews({ year, month }: FilteredNewsType) {
+  let news;
+
+  if (year && !month) {
+    news = await getNewsForYear(year);
+  } else if (year && month) {
+    news = await getNewsForYearAndMonth(year, padZero(getMonthNumber(month)));
   }
 
   let newsContent = <p>No news found for the selected period.</p>;
@@ -49,43 +84,21 @@ export default async function FilteredNewsPage({ params }: ParamsType) {
     newsContent = <NewsList news={news} />;
   }
 
-  const availableYears = await getAvailableNewsYears();
+  return newsContent;
+}
 
-  if (
-    (selectedYear && !availableYears.includes(String(selectedYear))) ||
-    (selectedMonth &&
-      !getAvailableNewsMonths(String(selectedYear)).includes(
-        padZero(getMonthNumber(selectedMonth))
-      ))
-  ) {
-    throw new Error("Invalid filter.");
-  }
+export default async function FilteredNewsPage({ params }: ParamsType) {
+  const filter = params.filter;
+
+  const selectedYear = filter?.[0];
+  const selectedMonth = filter?.[1];
 
   return (
     <>
-      <Pagination className="justify-start mb-4">
-        <PaginationContent>
-          {links.map((link) => {
-            const href = selectedYear
-              ? `/archive/${selectedYear}/${String(link).toLowerCase()}`
-              : `/archive/${link}`;
-
-            return (
-              <PaginationItem key={link}>
-                <Button
-                  className="w-fit px-1"
-                  variant={+selectedYear === link ? "outline" : "ghost"}
-                >
-                  <Link className="w-fit px-1" href={href}>
-                    {link}
-                  </Link>
-                </Button>
-              </PaginationItem>
-            );
-          })}
-        </PaginationContent>
-      </Pagination>
-      {newsContent}
+      <Suspense fallback={<LoadingSpinner />}>
+        <FilterHeader year={selectedYear} month={selectedMonth} />
+        <FilteredNews year={selectedYear} month={selectedMonth} />
+      </Suspense>
     </>
   );
 }
